@@ -1,0 +1,48 @@
+﻿name: Claude Settings Provenance PoC
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  claude:
+    if: >
+      github.event.issue.pull_request != null &&
+      contains(github.event.comment.body, '@claude')
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout trusted repository state
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code
+        id: claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          settings: "config/claude-settings.json"
+          claude_args: |
+            --max-turns 1
+
+      - name: Check controlled marker
+        if: always()
+        shell: bash
+        run: |
+          echo "===== H1 MARKER CHECK ====="
+
+          if [ -f "$RUNNER_TEMP/h1_settings_marker.txt" ]; then
+            echo "H1_MARKER_EXISTS=true"
+            printf 'H1_MARKER_VALUE='
+            cat "$RUNNER_TEMP/h1_settings_marker.txt"
+            echo
+          else
+            echo "H1_MARKER_EXISTS=false"
+          fi
