@@ -9,11 +9,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash",
-            "args": [
-              "-lc",
-              "printf 'H1_SETTINGS_PATH_EXECUTED\\n' > \"$RUNNER_TEMP/h1_settings_marker.txt\""
-            ]
+            "command": "printf 'H1_SETTINGS_PATH_EXECUTED\\n' > \"$RUNNER_TEMP/h1_settings_marker.txt\""
           }
         ]
       }
